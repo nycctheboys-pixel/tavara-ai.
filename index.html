@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Tavara AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  color: #e5e7eb;
+}
+
+header {
+  background: #020617;
+  padding: 15px;
+  text-align: center;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.container {
+  padding: 15px;
+}
+
+input, textarea, button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 6px;
+  border: none;
+  font-size: 16px;
+}
+
+textarea {
+  height: 80px;
+}
+
+button {
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #1e40af;
+}
+
+.box {
+  background: #020617;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 15px;
+}
+
+img {
+  width: 100%;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.admin {
+  display: none;
+  border: 1px solid #334155;
+}
+</style>
+</head>
+
+<body>
+
+<header>🤖 Tavara AI</header>
+
+<div class="container">
+
+  <!-- USER INPUT -->
+  <textarea id="userInput" placeholder="Ask something..."></textarea>
+
+  <button onclick="talkAI()">🧠 Ask AI</button>
+  <button onclick="startVoice()">🎙️ Speak</button>
+
+  <!-- AI OUTPUT -->
+  <div class="box" id="aiOutput">AI response will appear here...</div>
+
+  <!-- IMAGE AI -->
+  <div class="box">
+    <input id="imagePrompt" placeholder="Describe image..." />
+    <button onclick="generateImage()">🖼️ Generate Image</button>
+    <img id="aiImage" src="" alt="">
+  </div>
+
+  <!-- ADMIN LOGIN -->
+  <div class="box">
+    <input type="password" id="adminPass" placeholder="Admin password">
+    <button onclick="loginAdmin()">👑 Admin Login</button>
+  </div>
+
+  <!-- ADMIN PANEL -->
+  <div class="box admin" id="adminPanel">
+    <h3>Owner Control Panel</h3>
+    <textarea id="aiRule">You are a helpful AI assistant.</textarea>
+    <button onclick="saveRule()">Save AI Rule</button>
+  </div>
+
+</div>
+
+<script>
+/* ===== AI BRAIN ===== */
+let aiRule = localStorage.getItem("aiRule") || "You are a helpful AI assistant.";
+
+function talkAI() {
+  const input = document.getElementById("userInput").value;
+  if (!input) return;
+
+  const response = generateResponse(input);
+  document.getElementById("aiOutput").innerText = response;
+  speak(response);
+}
+
+function generateResponse(text) {
+  const t = text.toLowerCase();
+
+  if (t.includes("hello") || t.includes("hi")) {
+    return "Hello 👋 How can I help you today?";
+  }
+  if (t.includes("who are you")) {
+    return "I am Tavara AI, created and controlled by my owner.";
+  }
+  if (t.includes("owner")) {
+    return "My owner has full control over my brain and rules 👑";
+  }
+
+  return aiRule + "\n\nYou asked: " + text;
+}
+
+/* ===== VOICE INPUT ===== */
+function startVoice() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognition = new SpeechRecognition();
+  recognition.lang = "en-US";
+
+  recognition.onresult = function(event) {
+    document.getElementById("userInput").value =
+      event.results[0][0].transcript;
+  };
+  recognition.start();
+}
+
+/* ===== VOICE OUTPUT ===== */
+function speak(text) {
+  const msg = new SpeechSynthesisUtterance(text);
+  msg.rate = 1;
+  msg.pitch = 1;
+  speechSynthesis.speak(msg);
+}
+
+/* ===== IMAGE AI (DEMO) ===== */
+function generateImage() {
+  const prompt = document.getElementById("imagePrompt").value;
+  if (!prompt) return;
+
+  document.getElementById("aiImage").src =
+    "https://via.placeholder.com/512x512?text=" +
+    encodeURIComponent(prompt);
+}
+
+/* ===== ADMIN ===== */
+function loginAdmin() {
+  const pass = document.getElementById("adminPass").value;
+  if (pass === "admin123") {
+    document.getElementById("adminPanel").style.display = "block";
+    alert("Admin access granted 👑");
+  } else {
+    alert("Wrong password ❌");
+  }
+}
+
+function saveRule() {
+  aiRule = document.getElementById("aiRule").value;
+  localStorage.setItem("aiRule", aiRule);
+  alert("AI brain updated 🧠");
+}
+</script>
+
+</body>
+</html>
